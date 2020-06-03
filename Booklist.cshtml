@@ -1,0 +1,157 @@
+﻿@model List<Inventory.Models.tbl_book>
+@{
+    ViewBag.Title = "Booklist";
+}
+<h3>Book Inventory Management</h3>
+
+<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
+
+<br /><br />
+<div class="container">
+    <b>Search By:</b>
+    <select id="SearchBy">
+        <option value="Title">Title</option>
+        <option value="Author">Author</option>
+        <option value="ISBN">ISBN</option>
+    </select><br /><br />
+
+</div>
+@Html.TextBox("Search") <input type="submit" id="Searchbtn" value="Search" /><br /><br />
+
+
+
+<p>
+
+    
+    <a href="@Url.Action("Book")"
+       class="btn btn-success">Create New</a>
+</p>
+<table class="table table-hover table-responsive">
+    <thead>
+    <tr>
+        <th>Title</th>
+        <th>Author</th>
+        <th>ISBN</th>
+        <th>Publisher</th>
+        <th>Year</th>
+    </tr>
+    </thead>
+    <tbody id="DataSearching">
+    @foreach (var item in Model)
+    {
+        <tr id="DataSearching">
+            <td>@item.Title</td>
+            <td>@item.Author</td>
+            <td>@item.ISBN</td>
+            <td>@item.Publisher</td>
+            <td>@item.Year</td>
+            <td>
+                <a href="@Url.Action("Book", new { item.ID, item.Title, item.Author, item.ISBN, item.Publisher, item.Year })"
+                   class="btn btn-success">Edit</a>
+                <a href="@Url.Action("Delete", new { item.ID })" class="btn btn-danger" onclick=@("ShowAlert('" + item.ID + "')")>Delete</a>
+            </td>
+
+        </tr>
+        
+       
+    }
+        </tbody>
+
+
+
+        @*</thead>*@
+</table>
+<script src="~/Scripts/jquery-3.3.1.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $("#Searchbtn").click(function () {
+            var SearchBy = $("#SearchBy").val();
+            var SearchValue = $("#Search").val();
+            var SetData = $("#DataSearching");
+            SetData.html("");
+           
+            $.ajax({
+                type: "POST",
+                dataType:"json",
+                url: "/Book/GetDataList",
+                data: {SearchBy: SearchBy,SearchValue: SearchValue },
+               
+                success: function (result) {
+                    if (result.length == 0) {
+                        SetData.append('<tr style="color:red"><td colspan="3">No Match Data</td></tr>')
+                    }
+
+                    else {
+                        $.each(result, function (Booklist, value) {
+                            var Data = "<tr>" +
+                                "<td>" + value.Title + "</td>" +
+                                "<td>" + value.Author + "</td>" +
+                                "<td>" + value.ISBN + "</td>" +
+                                "<td>" + value.Publisher + "</td>" +
+                                "<td>" + value.Year + "</td>" +
+                                "</tr>";
+                            SetData.append(Data);
+                        });
+                    }
+                }
+            });
+        });
+    });
+</script>
+@*<script src="~/Scripts/jquery-3.3.1.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            function Contains(text_one, text_two) {
+                if (text_one.indexof(text_two) != -1)
+                    return true;
+            }
+            $("Search").keyup(function () {
+                var searchText = $("#Search").val().toLowerCase();
+                $(".Search").each(function () {
+                    if (!this.contains($(this).text().toLowerCase().searchText)) {
+                        $(this).hide();
+                    }
+                    else {
+                        $(this).show();
+                    }
+                });
+            });
+
+        });*@
+
+<script>
+    function ShowAlert(id) {
+        if (confirm("Are You Sure you want delete this book?")) {
+            $.ajax({
+               
+              });
+        
+
+
+</script>
+@*<script>
+    $(function () {
+        var AvailableList = [];
+        $.ajax{
+            {
+                type: 'GET',
+                    url: '/Book/Search',
+                    success: function(response)
+                    {
+                        $.each(response, function (key, item)
+                        {
+                            AvailableList.push(item.Title);
+                        });
+                        
+                    });
+                
+            };
+        });
+        $("#tags").autocomplete({
+            source: AvailableList
+        });
+    });
+</script>*@
